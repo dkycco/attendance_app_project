@@ -1,0 +1,98 @@
+<div class="modal zoomIn" id="modalDataSiswa"
+   data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="tambahSiswaLabel">
+   <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="">Form <%= is_edit ? 'Edit' : 'Tambah' %> Siswa</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            </button>
+         </div>
+         <form action="" id="formDataSiswa" method="POST" class="needs-validation" novalidate>
+            <div class="modal-body">
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="mb-3">
+                        <label class="form-label" for="id_sidik_jari">
+                           ID Sidik Jari <%= is_edit ? '' : `(dimulai dari ${id_sidik_jari})` %>
+                        </label>
+                        <input class="form-control" type="number" id="id_sidik_jari"
+                           placeholder="Tentukan ID sidik jari." name="id_sidik_jari"
+                           onKeyPress="if(this.value.length==3) return false;"
+                           value="<%= is_edit ? data_siswa.id_sidik_jari : '' %>"
+                           required>
+                     </div>
+
+                  </div>
+                  <div class="col-md-6">
+                     <div class="mb-3">
+                        <label class="form-label" for="nisn">NISN</label>
+                        <input class="form-control" type="number" id="nisn" placeholder="Masukan NISN siswa."
+                           name="nisn" onKeyPress="if(this.value.length==10) return false;"
+                           value="<%= is_edit ? data_siswa.nisn : '' %>"
+                           required>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="mb-3">
+                        <label class="form-label" for="nama_lengkap">Nama Lengkap</label>
+                        <input class="form-control" type="text" id="nama_lengkap"
+                           placeholder="Masukan nama lengkap siswa." name="nama_lengkap"
+                           value="<%= is_edit ? data_siswa.nama_lengkap : '' %>"
+                           required>
+                     </div>
+                  </div>
+
+                  <div class="col-md-6">
+                     <div class="mb-3">
+                        <label class="form-label" for="kelas">Kelas</label>
+                        <select class="select2" name="kelas" id="kelas" required>
+                           <%- is_edit ? '' : '<option selected disabled>Pilih kelas</option>' %>
+                           <option value="x_otomotif" <%= is_edit && data_siswa.kelas === 'x_otomotif' ? 'selected' : '' %>>X Otomotif</option>
+                           <option value="xi_otomotif" <%= is_edit && data_siswa.kelas === 'xi_otomotif' ? 'selected' : '' %>>XI Otomotif</option>
+                           <option value="xii_otomotif" <%= is_edit && data_siswa.kelas === 'xii_otomotif' ? 'selected' : '' %>>XII Otomotif</option>
+                           <option value="x_titl" <%= is_edit && data_siswa.kelas === 'x_titl' ? 'selected' : '' %>>X TITL</option>
+                           <option value="xi_titl" <%= is_edit && data_siswa.kelas === 'xi_titl' ? 'selected' : '' %>>XI TITL</option>
+                           <option value="xii_titl" <%= is_edit && data_siswa.kelas === 'xii_titl' ? 'selected' : '' %>>XII TITL</option>
+                           <option value="x_rpl" <%= is_edit && data_siswa.kelas === 'x_rpl' ? 'selected' : '' %>>X RPL</option>
+                           <option value="xi_rpl" <%= is_edit && data_siswa.kelas === 'xi_rpl' ? 'selected' : '' %>>XI RPL</option>
+                           <option value="xii_rpl" <%= is_edit && data_siswa.kelas === 'xii_rpl' ? 'selected' : '' %>>XII RPL</option>
+                        </select>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="mb-3">
+                        <label class="form-label" for="nama_orangtua_wali">Nama Orang Tua/Wali</label>
+                        <input class="form-control" type="text" id="nama_orangtua_wali"
+                           placeholder="Masukan nama orang tua/wali." name="nama_orangtua_wali"
+                           value="<%= is_edit ? data_siswa.nama_orangtua_wali : '' %>"
+                           required>
+                     </div>
+                  </div>
+
+                  <div class="col-md-6">
+                     <div class="mb-3">
+                        <label class="form-label" for="no_hp">No Headphone Orang Tua/Wali</label>
+                        <input class="form-control" type="text" id="no_hp" name="no_hp"
+                           onKeyPress="if(this.value.length==17) return false;"
+                           value="<%= is_edit ? data_siswa.no_hp : '+62' %>"
+                           oninput="formatNoHP(this)" required>
+                     </div>
+                  </div>
+               </div>
+
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
+               <button type="submit" class="btn btn-success"><i class="mdi mdi-content-save-all-outline"></i> Simpan
+                  Data</button>
+            </div>
+         </form>
+      </div>
+   </div>
+</div>

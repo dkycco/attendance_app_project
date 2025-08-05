@@ -1,0 +1,29 @@
+{
+   "name": "project_absensi",
+   "version": "1.0.0",
+   "main": "app.js",
+   "author": "",
+   "license": "ISC",
+   "description": "",
+   "dependencies": {
+      "bcryptjs": "^3.0.2",
+      "dayjs": "^1.11.13",
+      "dotenv": "^17.2.1",
+      "ejs": "^3.1.10",
+      "express": "^5.1.0",
+      "express-ejs-layouts": "^2.5.1",
+      "express-validator": "^7.2.1",
+      "mysql2": "^3.14.3",
+      "qrcode-terminal": "^0.12.0",
+      "sequelize": "^6.37.7",
+      "socket.io": "^4.8.1",
+      "whatsapp-web.js": "^1.31.0"
+   },
+   "scripts": {
+      "migrate": "node tools/migrate.js",
+      "seed": "node tools/seed.js",
+      "migrate:fresh": "node tools/migrate-seed.js",
+      "make:migration": "node tools/make.js migration",
+      "make:seeder": "node tools/make.js seeder"
+   }
+}

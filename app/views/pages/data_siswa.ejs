@@ -1,0 +1,249 @@
+<div class="row">
+   <div class="col-md-6-lg-12">
+      <div class="card">
+         <div class="card-header">
+            <h5 class="card-title mb-0">Data Siswa</h5>
+         </div>
+         <div class="card-body">
+            <div class="row g-4 mb-3">
+               <div class="col-md-6">
+                  <div>
+                     <button type="button" class="btn btn-success" id="btnTambahSiswa">
+                        <i class="ri-add-line align-bottom me-1"></i> Tambah Siswa
+                     </button>
+                  </div>
+               </div>
+               <table id="tableDataSiswa" class="table nowrap align-middle" style="width:100%">
+                  <thead>
+                     <tr>
+                        <th>ID Sidik Jari</th>
+                        <th>NISN</th>
+                        <th>Nama Lengkap</th>
+                        <th>Kelas</th>
+                        <th>Nama Orang Tua/wali</th>
+                        <th>No Headphone</th>
+                        <th>Aksi</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <% dataSiswa.forEach(data => { %>
+                     <tr>
+                        <td><%= data.id_sidik_jari %></td>
+                        <td><%= data.nisn %></td>
+                        <td><%= data.nama_lengkap %></td>
+                        <td><%= data.kelas.replace(/_/g, ' ').toUpperCase() %></td>
+                        <td><%= data.nama_orangtua_wali %></td>
+                        <td><%= data.no_hp %></td>
+                        <td>
+                           <button type="button"
+                              class="btn btn-sm btn-warning btn-icon waves-effect waves-light btn-edit"
+                              data-id="<%= data.id %>">
+                              <i class="ri-pencil-fill"></i>
+                           </button>
+                           <button type="button"
+                              class="btn btn-sm btn-danger btn-icon waves-effect waves-light btn-remove"
+                              data-id="<%= data.id %>">
+                              <i class="ri-delete-bin-5-line"></i>
+                           </button>
+                        </td>
+                     </tr>
+                     <% }) %>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+   const socket = io();
+
+   function dataSiswaRow(data) {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+         <td>${data.id_sidik_jari}</td>
+         <td>${data.nisn}</td>
+         <td>${data.nama_lengkap}</td>
+         <td>${data.kelas.replace(/_/g, ' ').toUpperCase()}</td>
+         <td>${data.nama_orangtua_wali}</td>
+         <td>${data.no_hp}</td>
+         <td>
+            <button type="button" class="btn btn-sm btn-warning btn-icon waves-effect waves-light btn-edit" data-id="${data.id}">
+               <i class="ri-pencil-fill"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-danger btn-icon waves-effect waves-light btn-remove" data-id="${data.id}">
+               <i class="ri-delete-bin-5-line"></i>
+            </button>
+         </td>
+      `;
+      return row;
+   }
+
+   function handleFormSubmit(url) {
+      const form = document.getElementById('formDataSiswa');
+
+      form.addEventListener('submit', async function onSubmit(e) {
+         e.preventDefault();
+
+         const formData = new FormData(this);
+         const data = Object.fromEntries(formData.entries());
+
+         try {
+            const res = await fetch(url, {
+               method: 'POST',
+               headers: {
+                  'Content-Type': 'application/json',
+                  'x-socket-id': socket.id
+               },
+               body: JSON.stringify(data)
+            });
+
+            document.activeElement?.blur();
+
+            const result = await res.json();
+            if (!res.ok) {
+               showToastify(result.message, result.type);
+               return;
+            }
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalDataSiswa'));
+            modal.hide();
+            form.reset();
+            if (res.ok) {
+            }
+         } catch (err) {
+            console.error('Gagal menyimpan data siswa:', err);
+         }
+      });
+   }
+
+   socket.on('data-siswa:toast', payload => {
+      const message = payload.message;
+      const type = payload.type;
+      showToastify(message, type);
+   });
+
+   socket.on('data-siswa:baru', (dataList) => {
+      const list = Array.isArray(dataList) ? dataList : [dataList];
+      const tbody = document.querySelector('#tableDataSiswa tbody');
+      const fragment = document.createDocumentFragment();
+
+      for (const data of list) {
+         const existing = tbody.querySelector(`.btn-remove[data-id="${data.id}"]`);
+         if (existing) continue;
+
+         const row = dataSiswaRow(data);
+         fragment.appendChild(row);
+      }
+
+      tbody.prepend(fragment);
+   });
+
+   socket.on('data-siswa:ubah', function (data) {
+      const row = document.querySelector(`#tableDataSiswa tbody tr td button[data-id="${data.id}"]`)?.closest('tr');
+      if (!row) return;
+
+      row.innerHTML = `
+         <td>${data.id_sidik_jari}</td>
+         <td>${data.nisn}</td>
+         <td>${data.nama_lengkap}</td>
+         <td>${data.kelas.replace(/_/g, ' ').toUpperCase()}</td>
+         <td>${data.nama_orangtua_wali}</td>
+         <td>${data.no_hp}</td>
+         <td>
+            <button type="button" class="btn btn-sm btn-warning btn-icon waves-effect waves-light btn-edit"
+               data-id="${data.id}">
+               <i class="ri-pencil-fill"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-danger btn-icon waves-effect waves-light btn-remove"
+            data-id="${data.id}">
+            <i class="ri-delete-bin-5-line"></i>
+            </button>
+         </td>
+      `;
+   });
+
+   socket.on('data-siswa:broadcast-hapus', async function (data) {
+      const button = document.querySelector(`.btn-remove[data-id="${data.id}"]`);
+
+      if (button) {
+         const row = button.closest('tr');
+         if (row) row.remove();
+      }
+   });
+
+   document.addEventListener('DOMContentLoaded', () => {
+      const idTable = 'tableDataSiswa';
+      const btnAdd = document.getElementById('btnTambahSiswa');
+      const btnRemove = document.getElementById
+      const table = document.getElementById(idTable);
+      const tableDataSiswa = new DataTable('#' + idTable, {
+         scrollX: true,
+         order: [0, 'desc']
+      })
+
+      btnAdd.addEventListener('click', async () => {
+         const response = await fetch('/data-siswa/create');
+         const html = await response.text();
+         document.getElementById('modalContainer').innerHTML = html;
+
+         $('.select2').select2({
+            dropdownParent: $('#modalDataSiswa')
+         });
+
+         const modal = new bootstrap.Modal(document.getElementById('modalDataSiswa'));
+         modal.show();
+
+         handleFormSubmit('/data-siswa');
+      });
+
+      table.addEventListener('click', async (e) => {
+         const btn = e.target.closest('.btn-edit');
+         if (btn) {
+            const id = btn.getAttribute('data-id');
+            const response = await fetch('/data-siswa/edit/' + id);
+            const html = await response.text();
+            document.getElementById('modalContainer').innerHTML = html;
+
+            $('.select2').select2({
+               dropdownParent: $('#modalDataSiswa')
+            });
+
+            const modal = new bootstrap.Modal(document.getElementById('modalDataSiswa'));
+            modal.show();
+
+            handleFormSubmit('/data-siswa/update/' + id);
+         }
+      });
+
+      table.addEventListener('click', async (e) => {
+         if (e.target.closest('.btn-remove')) {
+            const btn = e.target.closest('.btn-remove');
+            const id = btn.getAttribute('data-id');
+
+            const confirmAlert = confirm('Yakin hapus data ini?');
+            if (!confirmAlert) return;
+
+            try {
+               const res = await fetch(`/data-siswa/${id}`, {
+                  method: 'DELETE',
+                  headers: {
+                     'Content-Type': 'application/json',
+                     'x-socket-id': socket.id
+                  }
+               });
+
+               if (res.ok) {
+                  btn.closest('tr').remove();
+               }
+            } catch (error) {
+               console.log(error);
+            }
+         }
+      });
+
+   });
+
+</script>
