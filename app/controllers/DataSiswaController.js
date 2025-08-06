@@ -50,6 +50,14 @@ module.exports = {
    store: async (req, res) => {
       const io = req.app.get('io');
       const socketId = req.headers['x-socket-id'];
+      const {
+         id_sidik_jari,
+         nisn,
+         nama_lengkap,
+         kelas,
+         nama_orangtua_wali,
+         no_hp
+      } = req.body;
 
       await Promise.all(dataSiswaValidation.map(validation => validation.run(req)));
 
@@ -63,15 +71,6 @@ module.exports = {
       }
 
       try {
-         const {
-            id_sidik_jari,
-            nisn,
-            nama_lengkap,
-            kelas,
-            nama_orangtua_wali,
-            no_hp
-         } = req.body;
-
          const created = await DataSiswa.create({
             id_sidik_jari,
             nisn,
@@ -137,6 +136,14 @@ module.exports = {
       const io = req.app.get('io');
       const { id } = req.params;
       const socketId = req.headers['x-socket-id'];
+      const {
+         id_sidik_jari,
+         nisn,
+         nama_lengkap,
+         kelas,
+         nama_orangtua_wali,
+         no_hp
+      } = req.body;
 
       await Promise.all(dataSiswaValidation.map(validation => validation.run(req)));
 
@@ -150,15 +157,6 @@ module.exports = {
       }
 
       try {
-         const {
-            id_sidik_jari,
-            nisn,
-            nama_lengkap,
-            kelas,
-            nama_orangtua_wali,
-            no_hp
-         } = req.body;
-
          const siswa = await DataSiswa.findByPk(id);
          if (!siswa) {
             return res.status(400).json({

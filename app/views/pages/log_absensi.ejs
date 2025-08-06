@@ -1,0 +1,213 @@
+<div class="row">
+   <div class="col-md-6-lg-12">
+      <div class="card">
+         <div class="card-header">
+            <h5 class="card-title mb-0">Log Absensi</h5>
+         </div>
+         <div class="card-body">
+            <div class="row g-4 mb-3">
+               <div class="col-md-6">
+                  <div>
+                     <button type="button" class="btn btn-success" id="btnAbsensiManual">
+                        <i class="ri-add-line align-bottom me-1"></i> Absensi Manual
+                     </button>
+                  </div>
+               </div>
+               <table id="tableLogAbsensi" class="table nowrap align-middle" style="width:100%">
+                  <thead>
+                     <tr>
+                        <th>No</th>
+                        <th>ID Sidik Jari</th>
+                        <th>Nama Lengkap</th>
+                        <th>Kelas</th>
+                        <th>Waktu</th>
+                        <th>Status Absensi</th>
+                        <th>Status Pesan</th>
+                        <th>Aksi</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <% dataLogAbsensi.forEach((data, index) => { %>
+                     <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= data.siswa?.id_sidik_jari %></td>
+                        <td><%= data.siswa?.nama_lengkap %></td>
+                        <td><%= data.siswa?.kelas.replace(/_/g, ' ').toUpperCase() %></td>
+                        <td>
+                           <%= new Date(data.createdAt).toLocaleTimeString('id-ID', {
+                                 hour: '2-digit',
+                                 minute: '2-digit',
+                                 hour12: true
+                              }) %>
+                        </td>
+                        <td><%= data.status_siswa %></td>
+                        <td><%= data.status_pesan %></td>
+                        <td>
+                           <button type="button"
+                              class="btn btn-sm btn-primary btn-icon waves-effect waves-light btn-view"
+                              data-id="<%= data.id %>">
+                              <i class="ri-eye-2-line"></i>
+                           </button>
+                        </td>
+                     </tr>
+                     <% }) %>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+   const socket = io();
+
+   function handleFormSubmit(url) {
+      const form = document.getElementById('formLogAbsensi');
+
+      form.addEventListener('submit', async function onSubmit(e) {
+         e.preventDefault();
+
+         const formData = new FormData(this);
+         const data = Object.fromEntries(formData.entries());
+
+         try {
+            const res = await fetch(url, {
+               method: 'POST',
+               headers: {
+                  'Content-Type': 'application/json',
+               },
+               body: JSON.stringify(data)
+            });
+
+            document.activeElement?.blur();
+
+            const result = await res.json();
+            if (!res.ok) {
+               showToastify(result.message, result.type);
+               return;
+            }
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalLogAbsensi'));
+            modal.hide();
+            form.reset();
+         } catch (err) {
+            console.error('Gagal menyimpan absensi:', err);
+         }
+      });
+   }
+
+   document.addEventListener('DOMContentLoaded', () => {
+      const idTable = 'tableLogAbsensi';
+      const btnAdd = document.getElementById('btnAbsensiManual');
+      const table = document.getElementById(idTable);
+      const tableDataSiswa = new DataTable('#' + idTable, {
+         scrollX: true,
+         order: [0, 'desc']
+      })
+
+      btnAdd.addEventListener('click', async () => {
+         const response = await fetch('/log-absensi/create');
+         const html = await response.text();
+         document.getElementById('modalContainer').innerHTML = html;
+         
+         $('.select2').select2({
+            dropdownParent: $('#modalLogAbsensi')
+         });
+         
+         const modal = new bootstrap.Modal(document.getElementById('modalLogAbsensi'));
+         modal.show();
+
+         function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+         }
+
+         function textFormating(str) {
+            const lines = str.split('\n');
+            const trimmedLines = lines.map(line => line.trimStart());
+            return trimmedLines.join('\n').trim();
+         }
+                  
+         $('#cari_nisn').on('change', async function () {
+            const nisn = $(this).val();
+            const url = '/log-absensi/cari-nisn/' + nisn;
+            
+            try {
+               const res = await fetch(url, {
+                  method: 'GET',
+                  headers: {
+                     'Content-Type': 'application/json'
+                  },
+               });
+               const data = await res.json();
+               
+               if (data) {
+                  $('#id_sidik_jari').val(data.id_sidik_jari);
+                  $('#nama_lengkap').val(data.nama_lengkap);
+                  $('#nisn').val(data.nisn);
+                  $('#kelas').val(data.kelas.replace(/_/g, ' ').toUpperCase());
+                  $('#nama_orangtua_wali').val(data.nama_orangtua_wali);
+                  $('#no_hp').val(data.no_hp);
+
+                  $('input[name="status_siswa"]').on('change', function () {
+                     const status = $(this).val();
+                     const waktu = new Date().toLocaleTimeString('id-ID', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                     });
+                     const tanggal = new Date().toLocaleDateString('id-ID', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                     })
+                     let pesan = '';
+                     
+                     if (status === 'hadir') {
+                        pesan = textFormating(`
+                           Yth. ${data.nama_orangtua_wali} Bapak/Ibu Orang Tua/Wali Murid
+
+                           Dengan ini kami beritahukan bahwa ananda:
+
+                           Nama: ${data.nama_lengkap}
+                           Kelas: ${data.kelas.replace(/_/g, ' ').toUpperCase()}
+                           NISN: ${data.nisn}
+
+                           Telah tercatat hadir di sekolah secara sistem pada pukul: ${waktu}, tanggal: ${tanggal}.
+
+                           *Pesan ini terkirim secara otomatis oleh sistem, dimohon untuk tidak membalas pesan ini!
+                        `)
+                     } else if (status === 'pulang') {
+                        pesan = textFormating(`
+                           Yth. ${data.nama_orangtua_wali} Bapak/Ibu Orang Tua/Wali Murid
+                           
+                           Dengan ini kami beritahukan bahwa ananda:
+
+                           Nama: ${data.nama_lengkap}
+                           Kelas: ${data.kelas.replace(/_/g, ' ').toUpperCase()}
+                           NISN: ${data.nisn}
+
+                           Telah tercatat pulang dari sekolah secara sistem pada pukul: ${waktu}, tanggal ${tanggal}.
+
+                           Kami menghimbau kepada Bapak/Ibu/Wali untuk dapat memastikan siswa telah tiba di rumah dengan selamat.
+                           Apabila ada kendala dalam perjalanan, dimohon untuk segera menghubungi pihak sekolah.
+
+                           *Pesan ini terkirim secara otomatis oleh sistem, dimohon untuk tidak membalas pesan ini!
+                        `)
+                     }
+
+                     $('#pesan').val(pesan);
+                     autoResize(document.getElementById('pesan'));
+                  })
+               }
+            } catch (error) {
+               showToastify('Terjadi kesalahan saat memuat data', 'danger');
+            }
+         });
+
+         handleFormSubmit('/log-absensi');
+      });
+   });
+</script>

@@ -1,0 +1,115 @@
+<div class="modal zoomIn" id="modalLogAbsensi"
+   data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="logAbsensiLabel">
+   <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="">Form Absensi Manual</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            </button>
+         </div>
+         <form action="" id="formLogAbsensi" method="POST" class="needs-validation" novalidate>
+            <div class="modal-body">
+               <div class="row mb-4">
+                  <div class="col">
+                     <label class="form-label" for="cari_nisn">Cari Siswa</label>
+                     <select class="select2" name="cari_nisn" id="cari_nisn">
+                        <option value="" selected disabled>Pilih siswa</option>
+                        <% dataSiswa.forEach(data => { %>
+                           <option value="<%= data.nisn %>"><%= data.nama_lengkap %> 
+                              (<%= data.kelas.replace(/_/g, ' ').toUpperCase()%>)
+                           </option>
+                        <% }) %>
+                     </select>
+                  </div>
+               </div>
+
+               <div class="row mb-3">
+                  <div class="col">
+                     <label class="form-label fs-14">Data Siswa</label>
+                  </div>
+               </div>
+
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="mb-3">
+                        <label class="form-label" for="id_sidik_jari">ID Sidik Jari</label>
+                        <input class="form-control" type="text" id="id_sidik_jari" name="id_sidik_jari" readonly>
+                     </div>
+                  </div>
+
+                  <div class="col-md-6">
+                     <div class="mb-3">
+                        <label class="form-label" for="nisn">NISN</label>
+                        <input class="form-control" type="text" id="nisn" name="nisn" readonly>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="mb-3">
+                        <label class="form-label" for="nama_lengkap">Nama Lengkap</label>
+                        <input class="form-control" type="text" id="nama_lengkap" name="nama_lengkap" readonly>
+                     </div>
+                  </div>
+
+                  <div class="col-md-6">
+                     <div class="mb-3">
+                        <label class="form-label" for="kelas">Kelas</label>
+                        <input class="form-control" type="text" id="kelas" name="kelas" readonly>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="mb-3">
+                        <label class="form-label" for="nama_orangtua_wali">Nama Orang Tua/Wali</label>
+                        <input class="form-control" type="text" id="nama_orangtua_wali" name="nama_orangtua_wali" readonly>
+                     </div>
+                  </div>
+
+                  <div class="col-md-6">
+                     <div class="mb-3">
+                        <label class="form-label" for="no_hp">No HP</label>
+                        <input class="form-control" type="text" id="no_hp" name="no_hp" readonly>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="row">
+                  <label class="form-label">Status Siswa</label>
+                  <div class="col">
+                     <div class="form-check form-check-inline form-radio-primary mb-2">
+                        <input class="form-check-input" type="radio" name="status_siswa" id="hadir" value="hadir">
+                        <label class="form-check-label" for="hadir">
+                           Hadir
+                        </label>
+                     </div>
+      
+                     <div class="form-check form-check-inline form-radio-primary mb-2">
+                        <input class="form-check-input" type="radio" name="status_siswa" id="pulang" value="pulang">
+                        <label class="form-check-label" for="pulang">
+                           Pulang
+                        </label>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="row">
+                  <div class="col">
+                     <label class="form-label" for="pesan">Pesan</label>
+                     <textarea class="form-control" id="pesan" name="pesan" rows="1" oninput="autoResize(this)" readonly></textarea>
+                  </div>
+               </div>
+
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
+               <button type="submit" class="btn btn-success"><i class="mdi mdi-content-save-all-outline"></i> Simpan
+                  Data</button>
+            </div>
+         </form>
+      </div>
+   </div>
+</div>
