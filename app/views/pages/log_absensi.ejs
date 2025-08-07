@@ -98,6 +98,12 @@
       });
    }
 
+   socket.on('log-absensi:toast', payload => {
+      const message = payload.message;
+      const type = payload.type;
+      showToastify(message, type);
+   });
+
    document.addEventListener('DOMContentLoaded', () => {
       const idTable = 'tableLogAbsensi';
       const btnAdd = document.getElementById('btnAbsensiManual');
@@ -201,6 +207,11 @@
                      $('#pesan').val(pesan);
                      autoResize(document.getElementById('pesan'));
                   })
+               }
+
+               if (!res.ok) {
+                  showToastify(result.message, result.type);
+                  return;
                }
             } catch (error) {
                showToastify('Terjadi kesalahan saat memuat data', 'danger');
