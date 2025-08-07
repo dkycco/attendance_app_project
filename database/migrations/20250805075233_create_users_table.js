@@ -9,14 +9,18 @@ module.exports = {
             autoIncrement: true,
             primaryKey: true
          },
-         name: {
+         nama_lengkap: {
             type: Sequelize.STRING(100),
             allowNull: false
          },
-         email: {
+         username: {
             type: Sequelize.STRING(100),
             allowNull: false,
             unique: true
+         },
+         role: {
+            type: Sequelize.ENUM('webmaster', 'admin', 'guru'),
+            allowNull: false
          },
          password: {
             type: Sequelize.STRING,

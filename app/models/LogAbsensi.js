@@ -8,9 +8,15 @@ const DataSiswa = require('./DataSiswa');
 class LogAbsensi extends BaseModel {}
 
 LogAbsensi.init({
+  id: {
+    type: DataTypes.INTEGER(10),
+    primaryKey: true,
+    autoIncrement: true
+  },
   nisn: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
+    unique: true
   },
   status_siswa: DataTypes.ENUM('hadir', 'pulang'),
   status_pesan: DataTypes.ENUM('pending', 'terkirim', 'gagal'),

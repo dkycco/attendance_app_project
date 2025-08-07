@@ -1,6 +1,6 @@
 const { body } = require('express-validator');
 
-const siswaValidationRules = [
+module.exports = [
   body('id_sidik_jari')
     .notEmpty().withMessage('ID sidik jari wajib diisi!'),
 
@@ -22,5 +22,3 @@ const siswaValidationRules = [
     .notEmpty().withMessage('Nomor HP wajib diisi!')
     .isLength({ min: 10, max: 17 }).withMessage('Nomor HP tidak valid!')
 ];
-
-module.exports = siswaValidationRules;

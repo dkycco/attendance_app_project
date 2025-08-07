@@ -1,6 +1,4 @@
-const {
-  DataTypes
-} = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');
 const BaseModel = require('./BaseModel');
 
@@ -21,7 +19,6 @@ DataSiswa.init({
   nama_lengkap: DataTypes.STRING(100),
   kelas: DataTypes.STRING(10),
   nama_orangtua_wali: DataTypes.STRING(100),
-  no_hp: DataTypes.STRING(10),
   created_at: DataTypes.TIME
 }, {
   sequelize,

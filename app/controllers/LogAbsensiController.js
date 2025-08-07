@@ -1,10 +1,8 @@
 const DataSiswa = require('../models/DataSiswa');
 const LogAbsensi = require('../models/LogAbsensi');
-const {
-    Op
-} = require('sequelize');
+const { Op } = require('sequelize');
 const dayjs = require('dayjs');
-
+const whatsappClient = require('../../services/whatsapp');
 
 module.exports = {
     index: async(req, res) => {
@@ -40,6 +38,7 @@ module.exports = {
             res.render('pages/form_log_absensi', {
                 layout: false,
                 title: false,
+                is_create: true,
                 dataSiswa
             })
         } catch (error) {
@@ -48,15 +47,11 @@ module.exports = {
     },
 
     findNISN: async(req, res) => {
-        const {
-            nisn
-        } = req.params;
+        const { nisn } = req.params;
 
         try {
             const siswa = await DataSiswa.findOne({
-                where: {
-                    nisn
-                }
+                where: { nisn }
             });
 
             if (!siswa) {
@@ -74,6 +69,7 @@ module.exports = {
     store: async(req, res) => {
         const io = req.app.get('io');
         const {
+            id_sidik_jari,
             nisn,
             nama_lengkap,
             kelas,
@@ -81,11 +77,16 @@ module.exports = {
             no_hp,
             status_siswa
         } = req.body;
+        const phone = no_hp.replace(/[^0-9]/g, '') + '@c.us';
 
         function textFormating(str) {
             const lines = str.split('\n');
             const trimmedLines = lines.map(line => line.trimStart());
             return trimmedLines.join('\n').trim();
+        }
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
         }
 
         try {
@@ -151,9 +152,9 @@ module.exports = {
                     Kelas: ${kelas.replace(/_/g, ' ').toUpperCase()}
                     NISN: ${nisn}
 
-                    Telah tercatat hadir di sekolah secara sistem pada pukul: ${waktu}, tanggal: ${tanggal}.
+                    Telah tercatat *hadir* di sekolah secara sistem pada pukul: *${waktu}*, tanggal: *${tanggal}*.
 
-                    *Pesan ini terkirim secara otomatis oleh sistem, dimohon untuk tidak membalas pesan ini!
+                    _*Pesan ini terkirim secara otomatis oleh sistem, dimohon untuk tidak membalas pesan ini!_
                 `)
             } else if (status_siswa === 'pulang') {
                 pesan = textFormating(`
@@ -165,20 +166,13 @@ module.exports = {
                     Kelas: ${kelas.replace(/_/g, ' ').toUpperCase()}
                     NISN: ${nisn}
 
-                    Telah tercatat pulang dari sekolah secara sistem pada pukul: ${waktu}, tanggal ${tanggal}.
+                    Telah tercatat *pulang* dari sekolah secara sistem pada pukul: *${waktu}*, tanggal *${tanggal}*.
 
-                    Kami menghimbau kepada Bapak/Ibu/Wali untuk dapat memastikan siswa telah tiba di rumah dengan selamat.
-                    Apabila ada kendala dalam perjalanan, dimohon untuk segera menghubungi pihak sekolah.
+                    Kami menghimbau kepada Bapak/Ibu/Wali untuk dapat memastikan siswa telah tiba di rumah dengan selamat. Apabila ada kendala dalam perjalanan, dimohon untuk segera menghubungi pihak sekolah.
 
-                    *Pesan ini terkirim secara otomatis oleh sistem, dimohon untuk tidak membalas pesan ini!
+                    _*Pesan ini terkirim secara otomatis oleh sistem, dimohon untuk tidak membalas pesan ini!_
                 `)
             }
-
-            const siswa = await DataSiswa.findOne({
-                where: {
-                    nisn
-                }
-            });
 
             const created = await LogAbsensi.create({
                 nisn,
@@ -187,10 +181,35 @@ module.exports = {
                 pesan
             });
 
+            if (no_hp) {
+                try {
+                    await delay(5000);
+                    await whatsappClient.sendMessage(phone, pesan)
+                    await created.update({ status_pesan: 'terkirim' });
+
+                    io.emit('log-absensi:toast', {
+                        message: `Pesan terkirim ke ${no_hp}`,
+                        type: 'success'
+                    });
+                } catch (error) {
+                    await created.update({ status_pesan: 'gagal' });
+                    
+                    console.log(error);
+                    return res.status(500).json({
+                        message: `Pesan gagal terkirim ke ${no_hp}`,
+                        type: 'warning'
+                    });
+                }
+            }
+
             io.emit('log-absensi:baru', {
-                nisn: created.nisn,
-                siswa,
-                waktu: created.created_at
+                id: created.id,
+                id_sidik_jari,
+                nama_lengkap,
+                kelas,
+                waktu,
+                status_siswa,
+                status_pesan: 'pending'
             });
 
             io.emit('log-absensi:toast', {
@@ -199,11 +218,7 @@ module.exports = {
             });
 
             res.status(201).json({
-                nisn: created.nisn,
-                waktu: created.created_at,
-                status_siswa,
-                status_pesan: created.status_pesan,
-                siswa
+                created
             });
         } catch (error) {
             console.log(error);
@@ -212,6 +227,30 @@ module.exports = {
                 message: 'Terjadi kesalahan saat menyimpan data!',
                 type: 'danger'
             });
+        }
+    },
+
+    viewData: async (req, res) => {
+        const { id } = req.params;
+        const data = await LogAbsensi.findOne({
+            where: {
+                id
+            },
+            include: {
+                model: DataSiswa,
+                as: 'siswa'
+            }
+        });
+
+        try {
+            res.render('pages/form_log_absensi', {
+                layout: false,
+                title: false,
+                is_create: false,
+                data
+            })
+        } catch (error) {
+            
         }
     }
 }

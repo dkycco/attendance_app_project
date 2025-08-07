@@ -1,3 +1,22 @@
+function convertWhatsappToHTML(text) {
+  return text
+    .replace(/\n{2,}/g, '</p><p>')
+    .replace(/\n/g, '<br>')
+    .replace(/\_\*\*(.+?)\*\*\_/g, '<strong><em>$1</em></strong>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\_\*(.+?)\*\_/g, '<strong><em>$1</em></strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/\_(.+?)\_/g, '<em>$1</em>')
+    .replace(/^/, '<p>')
+    .replace(/$/, '</p>');
+}
+
+function textFormating(str) {
+   const lines = str.split('\n');
+   const trimmedLines = lines.map(line => line.trimStart());
+   return trimmedLines.join('\n').trim();
+}
+
 function formatNoHP(input) {
    const cleaned = input.value.replace(/[^0-9]/g, '');
 

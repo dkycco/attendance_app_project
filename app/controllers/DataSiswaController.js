@@ -103,16 +103,12 @@ module.exports = {
          }
 
          res.status(201).json({
-            id_sidik_jari: created.id_sidik_jari,
-            nisn: created.nisn,
-            nama_lengkap: created.nama_lengkap,
-            kelas: created.kelas,
-            nama_orangtua_wali: created.nama_orangtua_wali,
-            no_hp: created.no_hp
+            created
          });
       } catch (err) {
+         console.log(err);
          return res.status(400).json({
-            message,
+            message: 'Gagal menyimpan data siswa!',
             type: 'warning'
          });
       }
@@ -197,12 +193,7 @@ module.exports = {
          }
 
          res.status(200).json({
-            id_sidik_jari: siswa.id_sidik_jari,
-            nisn: siswa.nisn,
-            nama_lengkap: siswa.nama_lengkap,
-            kelas: siswa.kelas,
-            nama_orangtua_wali: siswa.nama_orangtua_wali,
-            no_hp: siswa.no_hp
+            siswa
          });
       } catch (error) {
          return res.status(400).json({

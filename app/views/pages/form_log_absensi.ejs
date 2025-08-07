@@ -3,12 +3,13 @@
    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
          <div class="modal-header">
-            <h5 class="modal-title" id="">Form Absensi Manual</h5>
+            <h5 class="modal-title" id=""><%= is_create ? 'Form Absensi Manual' : 'Data Log Absensi' %></h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
             </button>
          </div>
          <form action="" id="formLogAbsensi" method="POST" class="needs-validation" novalidate>
             <div class="modal-body">
+               <% if (is_create) { %>
                <div class="row mb-4">
                   <div class="col">
                      <label class="form-label" for="cari_nisn">Cari Siswa</label>
@@ -22,6 +23,7 @@
                      </select>
                   </div>
                </div>
+               <% } %>
 
                <div class="row mb-3">
                   <div class="col">
@@ -33,14 +35,14 @@
                   <div class="col-md-6">
                      <div class="mb-3">
                         <label class="form-label" for="id_sidik_jari">ID Sidik Jari</label>
-                        <input class="form-control" type="text" id="id_sidik_jari" name="id_sidik_jari" readonly>
+                        <input class="form-control" type="text" id="id_sidik_jari" name="id_sidik_jari" value="<%= is_create ? '' : data.siswa?.id_sidik_jari %>" readonly>
                      </div>
                   </div>
 
                   <div class="col-md-6">
                      <div class="mb-3">
                         <label class="form-label" for="nisn">NISN</label>
-                        <input class="form-control" type="text" id="nisn" name="nisn" readonly>
+                        <input class="form-control" type="text" id="nisn" name="nisn" value="<%= is_create ? '' : data.nisn %>" readonly>
                      </div>
                   </div>
                </div>
@@ -49,14 +51,14 @@
                   <div class="col-md-6">
                      <div class="mb-3">
                         <label class="form-label" for="nama_lengkap">Nama Lengkap</label>
-                        <input class="form-control" type="text" id="nama_lengkap" name="nama_lengkap" readonly>
+                        <input class="form-control" type="text" id="nama_lengkap" name="nama_lengkap" value="<%= is_create ? '' : data.siswa?.nama_lengkap %>" readonly>
                      </div>
                   </div>
 
                   <div class="col-md-6">
                      <div class="mb-3">
                         <label class="form-label" for="kelas">Kelas</label>
-                        <input class="form-control" type="text" id="kelas" name="kelas" readonly>
+                        <input class="form-control" type="text" id="kelas" name="kelas" value="<%= is_create ? '' : data.siswa?.kelas.replace(/_/g, ' ').toUpperCase() %>" readonly>
                      </div>
                   </div>
                </div>
@@ -65,14 +67,14 @@
                   <div class="col-md-6">
                      <div class="mb-3">
                         <label class="form-label" for="nama_orangtua_wali">Nama Orang Tua/Wali</label>
-                        <input class="form-control" type="text" id="nama_orangtua_wali" name="nama_orangtua_wali" readonly>
+                        <input class="form-control" type="text" id="nama_orangtua_wali" name="nama_orangtua_wali" value="<%= is_create ? '' : data.siswa?.nama_orangtua_wali %>" readonly>
                      </div>
                   </div>
 
                   <div class="col-md-6">
                      <div class="mb-3">
                         <label class="form-label" for="no_hp">No HP</label>
-                        <input class="form-control" type="text" id="no_hp" name="no_hp" readonly>
+                        <input class="form-control" type="text" id="no_hp" name="no_hp" value="<%= is_create ? '' : data.siswa?.no_hp %>" readonly>
                      </div>
                   </div>
                </div>
@@ -81,14 +83,16 @@
                   <label class="form-label">Status Siswa</label>
                   <div class="col">
                      <div class="form-check form-check-inline form-radio-primary mb-2">
-                        <input class="form-check-input" type="radio" name="status_siswa" id="hadir" value="hadir">
+                        <input class="form-check-input" type="radio" name="status_siswa" id="hadir" value="hadir" <%= is_create ? '' : 'disabled' %>
+                           <%= (!is_create && data.status_siswa === 'hadir') ? 'checked' : '' %>>
                         <label class="form-check-label" for="hadir">
                            Hadir
                         </label>
                      </div>
       
                      <div class="form-check form-check-inline form-radio-primary mb-2">
-                        <input class="form-check-input" type="radio" name="status_siswa" id="pulang" value="pulang">
+                        <input class="form-check-input" type="radio" name="status_siswa" id="pulang" value="pulang" <%= is_create ? '' : 'disabled' %>
+                           <%= (!is_create && data.status_siswa === 'pulang') ? 'checked' : '' %>>
                         <label class="form-check-label" for="pulang">
                            Pulang
                         </label>
@@ -99,15 +103,18 @@
                <div class="row">
                   <div class="col">
                      <label class="form-label" for="pesan">Pesan</label>
-                     <textarea class="form-control" id="pesan" name="pesan" rows="1" oninput="autoResize(this)" readonly></textarea>
+                     <textarea class="form-control" id="pesan" rows="10" name="pesan" readonly><%= is_create ? '' : data.pesan.replace(/'/g, "\\'") %></textarea>
                   </div>
                </div>
 
             </div>
             <div class="modal-footer">
                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
+               <% if (is_create) { %>
                <button type="submit" class="btn btn-success"><i class="mdi mdi-content-save-all-outline"></i> Simpan
-                  Data</button>
+                  Data
+               </button>
+               <% } %>
             </div>
          </form>
       </div>
