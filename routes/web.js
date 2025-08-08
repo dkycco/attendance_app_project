@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+const DashboardController = require('../app/controllers/DashboardController');
 const DataSiswaController = require('../app/controllers/DataSiswaController');
 const LogAbsensiController = require('../app/controllers/LogAbsensiController');
 const LoginController = require('../app/controllers/LoginController')
@@ -11,7 +12,9 @@ router.get('/login', LoginController.index);
 router.post('/login', LoginController.login);
 router.get('/logout', LoginController.logout);
 
-router.use(ensureAuthenticated);
+// router.use(ensureAuthenticated);
+
+router.get('/dashboard', DashboardController.index);
 
 router.get('/data-siswa', DataSiswaController.index);
 router.get('/data-siswa/create', DataSiswaController.create);

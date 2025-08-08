@@ -28,7 +28,21 @@
             </div>
             <ul class="navbar-nav" id="navbar-nav">
 
+                <li class="menu-title"><span data-key="t-data">Menu</span></li>
+
+                <li class="nav-item">
+                    <a class="nav-link menu-link <%= currentController === 'dashboard.index' ? 'active' : '' %>" href="/dashboard">
+                        <i class="bx bxs-dashboard"></i> <span data-key="t-data-siswa">Dashboard</span>
+                    </a>
+                </li>
+
                 <li class="menu-title"><span data-key="t-data">Data</span></li>
+
+                <li class="nav-item">
+                    <a class="nav-link menu-link <%= currentController === 'users.index' ? 'active' : '' %>" href="/users">
+                        <i class="mdi mdi-account-key"></i> <span data-key="t-data-siswa">Pengguna</span>
+                    </a>
+                </li>
 
                 <li class="nav-item">
                     <a class="nav-link menu-link <%= currentController === 'data_siswa.index' ? 'active' : '' %>" href="/data-siswa">

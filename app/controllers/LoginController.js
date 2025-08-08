@@ -47,6 +47,7 @@ module.exports = {
 
          req.session.user = {
             id: user.id,
+            nama_lengkap: user.nama_lengkap,
             username: user.username,
             role: user.role
          };

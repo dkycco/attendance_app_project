@@ -29,6 +29,11 @@ app.use(expressLayouts);
 
 app.set('io', io);
 
+app.use((req, res, next) => {
+   res.locals.user = req.session.user || null;
+   next();
+});
+
 app.use('/', webRoutes);
 
 app.use('/', (req, res) => {

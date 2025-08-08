@@ -103,7 +103,13 @@ module.exports = {
          }
 
          res.status(201).json({
-            created
+            id: created.id,
+            id_sidik_jari: created.id_sidik_jari,
+            nisn: created.nisn,
+            nama_lengkap: created.nama_lengkap,
+            kelas: created.kelas,
+            nama_orangtua_wali: created.nama_orangtua_wali,
+            no_hp: created.no_hp
          });
       } catch (err) {
          console.log(err);

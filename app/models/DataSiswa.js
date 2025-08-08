@@ -19,6 +19,7 @@ DataSiswa.init({
   nama_lengkap: DataTypes.STRING(100),
   kelas: DataTypes.STRING(10),
   nama_orangtua_wali: DataTypes.STRING(100),
+  no_hp: DataTypes.STRING(17),
   created_at: DataTypes.TIME
 }, {
   sequelize,
