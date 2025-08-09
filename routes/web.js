@@ -5,6 +5,7 @@ const DashboardController = require('../app/controllers/DashboardController');
 const DataSiswaController = require('../app/controllers/DataSiswaController');
 const LogAbsensiController = require('../app/controllers/LogAbsensiController');
 const LoginController = require('../app/controllers/LoginController')
+const Users = require('../app/controllers/Users');
 
 const { ensureAuthenticated, authorizeRoles } = require('../middleware/authMiddleware');
 
@@ -15,6 +16,8 @@ router.get('/logout', LoginController.logout);
 // router.use(ensureAuthenticated);
 
 router.get('/dashboard', DashboardController.index);
+
+router.get('/pengguna', Users.index);
 
 router.get('/data-siswa', DataSiswaController.index);
 router.get('/data-siswa/create', DataSiswaController.create);
