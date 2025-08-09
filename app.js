@@ -12,13 +12,13 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 app.use(session({
-   secret: 'rahasia_anda',
-   resave: false,
-   saveUninitialized: false
+    secret: 'rahasia_anda',
+    resave: false,
+    saveUninitialized: false
 }));
 
 app.use(express.urlencoded({
-   extended: true
+    extended: true
 }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -30,21 +30,21 @@ app.use(expressLayouts);
 app.set('io', io);
 
 app.use((req, res, next) => {
-   res.locals.user = req.session.user || null;
-   next();
+    res.locals.user = req.session.user || null;
+    next();
 });
 
 app.use('/', webRoutes);
 
 app.use('/', (req, res) => {
-   res.status(404)
-   res.render('auth/errors/404', {
-      layout: 'layouts/auth-layout',
-      title: '404 | Page not found'
-   })
+    res.status(404)
+    res.render('auth/errors/404', {
+        layout: 'layouts/auth-layout',
+        title: '404 | Page not found'
+    })
 })
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-   console.log(`🚀 Server running at http://localhost:${PORT}`);
+    console.log(`🚀 Server running at http://localhost:${PORT}`);
 });

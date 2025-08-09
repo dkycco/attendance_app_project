@@ -1,0 +1,44 @@
+<div class="row">
+   <div class="col-md-6-lg-12">
+      <div class="card">
+         <div class="card-header">
+            <h5 class="card-title mb-0">Data Pengguna</h5>
+         </div>
+         <div class="card-body">
+            <div class="row g-4 mb-3">
+               <div class="col-md-6">
+                  <div>
+                     <button type="button" class="btn btn-success" id="btnTambahPengguna">
+                        <i class="ri-add-line align-bottom me-1"></i> Tambah Pengguna
+                     </button>
+                  </div>
+               </div>
+               <table id="tableDataPengguna" class="table nowrap align-middle" style="width:100%">
+                  <thead>
+                     <tr>
+                        <th>ID</th>
+                        <th>Nama Lengkap</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Aksi</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <% dataUser.forEach(data => { %>
+                        <tr>
+                           <td><%= data.id %></td>
+                           <td><%= data.nama_lengkap %></td>
+                           <td><%= data.username %></td>
+                           <td><span class="badge bg-danger"><%= data.role %></span></td>
+                           <td>Aksi</td>
+                        </tr>
+                     <% }); %>
+                     <tr>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

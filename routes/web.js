@@ -5,7 +5,7 @@ const DashboardController = require('../app/controllers/DashboardController');
 const DataSiswaController = require('../app/controllers/DataSiswaController');
 const LogAbsensiController = require('../app/controllers/LogAbsensiController');
 const LoginController = require('../app/controllers/LoginController')
-const Users = require('../app/controllers/Users');
+const Users = require('../app/controllers/UsersController');
 
 const { ensureAuthenticated, authorizeRoles } = require('../middleware/authMiddleware');
 
