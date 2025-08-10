@@ -11,7 +11,10 @@ function authorizeRoles(...roles) {
       if (!user) return res.redirect('/login');
 
       if (!roles.includes(user.role)) {
-         return res.status(403).send('Akses ditolak: role tidak diizinkan.');
+         return res.status(403).render('auth/errors/404', {
+            layout: 'layouts/auth-layout',
+            title: '404 | Page not found'
+         })
       }
 
       next();

@@ -193,8 +193,6 @@ module.exports = {
                     });
                 } catch (error) {
                     await created.update({ status_pesan: 'gagal' });
-                    
-                    console.log(error);
                     return res.status(500).json({
                         message: `Pesan gagal terkirim ke ${no_hp}`,
                         type: 'warning'
@@ -217,12 +215,8 @@ module.exports = {
                 type: 'success'
             });
 
-            res.status(201).json({
-                created
-            });
+            res.status(200).json({ created });
         } catch (error) {
-            console.log(error);
-
             return res.status(500).json({
                 message: 'Terjadi kesalahan saat menyimpan data!',
                 type: 'danger'

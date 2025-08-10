@@ -40,7 +40,12 @@
                               %>
                               <%- color ? `<span class="badge ${color}">${data.role.charAt(0).toUpperCase() + data.role.slice(1)}</span>` : '' %>
                            </td>
-                           <td>Aksi</td>
+                           <td>
+                              <button type="button" class="btn btn-sm btn-warning btn-icon waves-effect waves-light btn-edit"
+                              data-id="<%= data.id %>">
+                              <i class="ri-pencil-fill"></i>
+                           </button>
+                           </td>
                         </tr>
                      <% }); %>
                   </tbody>
@@ -54,10 +59,113 @@
 <script>
    const socket = io();
 
+   function dataPenggunaRow(data) {
+      const row = document.createElement('tr');
+      const badgeColors = {
+         webmaster: 'bg-danger',
+         admin: 'bg-warning',
+         guru: 'bg-success'
+      };
+      const color = badgeColors[data.role];
+      row.innerHTML = `
+         <td>${data.id}</td>
+         <td>${data.nama_lengkap}</td>
+         <td>${data.username}</td>
+         <td>
+            ${color ? `<span class="badge ${color}">${data.role.charAt(0).toUpperCase() + data.role.slice(1)}</span>` : ''}
+         </td>
+         <td>
+            <button type="button" class="btn btn-sm btn-warning btn-icon waves-effect waves-light btn-edit"
+               data-id="${data.id}">
+               <i class="ri-pencil-fill"></i>
+            </button>   
+         </td>
+      `;
+      return row;
+   }
+
+   function handleFormSubmit(url) {
+      const form = document.getElementById('formDataPengguna');
+
+      form.addEventListener('submit', async function onSubmit(e) {
+         e.preventDefault();
+
+         const formData = new FormData(this);
+         const data = Object.fromEntries(formData.entries());
+
+         try {
+            const res = await fetch(url, {
+               method: 'POST',
+               headers: {
+                  'Content-Type': 'application/json',
+                  'x-socket-id': socket.id
+               },
+               body: JSON.stringify(data)
+            });
+
+            document.activeElement?.blur();
+
+            const result = await res.json();
+            if (!res.ok) {
+               showToastify(result.message, result.type);
+               return;
+            }
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalDataPengguna'));
+            modal.hide();
+            form.reset();
+         } catch (err) {
+            console.error('Gagal menyimpan data pengguna:', err);
+         }
+      });
+   }
+
    socket.on('push:toast', payload => {
       const message = payload.message;
       const type = payload.type;
       showToastify(message, type);
+   });
+
+   socket.on('data-pengguna:baru', (dataList) => {
+      const list = Array.isArray(dataList) ? dataList : [dataList];
+      const tbody = document.querySelector('#tableDataPengguna tbody');
+      const fragment = document.createDocumentFragment();
+
+      for (const data of list) {
+         const existing = tbody.querySelector(`.btn-remove[data-id="${data.id}"]`);
+         if (existing) continue;
+
+         const row = dataPenggunaRow(data);
+         fragment.appendChild(row);
+      }
+
+      tbody.prepend(fragment);
+   });
+
+   socket.on('data-pengguna:ubah', function (data) {
+      const badgeColors = {
+         webmaster: 'bg-danger',
+         admin: 'bg-warning',
+         guru: 'bg-success'
+      };
+      const color = badgeColors[data.role];
+      const row = document.querySelector(`#tableDataPengguna tbody tr td button[data-id="${data.id}"]`)?.closest('tr');
+      if (!row) return;
+
+      row.innerHTML = `
+         <td>${data.id}</td>
+         <td>${data.nama_lengkap}</td>
+         <td>${data.username}</td>
+         <td>
+            ${color ? `<span class="badge ${color}">${data.role.charAt(0).toUpperCase() + data.role.slice(1)}</span>` : ''}
+         </td>
+         <td>
+            <button type="button" class="btn btn-sm btn-warning btn-icon waves-effect waves-light btn-edit"
+               data-id="${data.id}">
+               <i class="ri-pencil-fill"></i>
+            </button>   
+         </td>
+      `;
    });
 
    document.addEventListener('DOMContentLoaded', () => {
@@ -68,5 +176,41 @@
          scrollX: true,
          order: [0, 'desc']
       })
+
+      btnAdd.addEventListener('click', async () => {
+         const response = await fetch('/pengguna/create');
+         const html = await response.text();
+         document.getElementById('modalContainer').innerHTML = html;
+
+         $('.select2').select2({
+            dropdownParent: $('#modalDataPengguna')
+         });
+
+         const modal = new bootstrap.Modal(document.getElementById('modalDataPengguna'));
+         modal.show();
+
+         handleFormSubmit('/pengguna');
+      });
+
+      table.addEventListener('click', async (e) => {
+         const btn = e.target.closest('.btn-edit');
+         if (btn) {
+            const id = btn.getAttribute('data-id');
+            const response = await fetch('/pengguna/edit/' + id);
+            const html = await response.text();
+            document.getElementById('modalContainer').innerHTML = html;
+
+            $('.select2').select2({
+               dropdownParent: $('#modalDataPengguna')
+            });
+
+            const modal = new bootstrap.Modal(document.getElementById('modalDataPengguna'));
+            modal.show();
+
+            handleFormSubmit('/pengguna/update/' + id);
+         }
+      });
+
    });
+   
 </script>

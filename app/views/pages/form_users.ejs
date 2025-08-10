@@ -1,0 +1,68 @@
+<div class="modal zoomIn" id="modalDataPengguna" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+   role="dialog" aria-labelledby="tambahSiswaLabel">
+   <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="">Form <%= is_create ? 'Tambah' : 'Edit' %> Pengguna</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            </button>
+         </div>
+         <form action="" id="formDataPengguna" method="POST" class="needs-validation" novalidate>
+            <div class="modal-body">
+
+               <div class="mb-3">
+                  <label class="form-label" for="nama_lengkap">Nama Lengkap</label>
+                  <input class="form-control" type="text" id="nama_lengkap" name="nama_lengkap"
+                  value="<%= is_create ? '' : data.nama_lengkap %>">
+               </div>
+
+               <div class="mb-3">
+                  <label class="form-label" for="username">Username</label>
+                  <input class="form-control" type="text" id="username" name="username"
+                  value="<%= is_create ? '' : data.username %>">
+               </div>
+
+               <div class="mb-3">
+                  <label class="form-label" for="password">Password</label>
+                  <input class="form-control" type="text" id="password" name="password">
+               </div>
+
+               <div class="mb-3">
+                  <label class="form-label" for="konfirmasi_pass">Konfirmasi Password</label>
+                  <input class="form-control" type="text" id="konfirmasi_pass" name="konfirmasi_pass">
+               </div>
+               
+               <div class="row">
+                  <label class="form-label">Role Pengguna</label>
+                  <div class="col">
+                     <div class="form-check form-check-inline form-radio-danger mb-2">
+                        <input class="form-check-input" type="radio" name="role" id="webmaster" value="webmaster"
+                           <%= (!is_create && data.role === 'webmaster') ? 'checked' : '' %>>
+                        <label class="form-check-label" for="webmaster">Webmaster</label>
+                     </div>
+      
+                     <div class="form-check form-check-inline form-radio-warning mb-2">
+                        <input class="form-check-input" type="radio" name="role" id="admin" value="admin"
+                           <%= (!is_create && data.role === 'admin') ? 'checked' : '' %>>
+                        <label class="form-check-label" for="admin">Admin</label>
+                     </div>
+      
+                     <div class="form-check form-check-inline form-radio-success mb-2">
+                        <input class="form-check-input" type="radio" name="role" id="guru" value="guru"
+                           <%= (!is_create && data.role === 'guru') ? 'checked' : '' %>>
+                        <label class="form-check-label" for="guru">Guru</label>
+                     </div>
+                  </div>
+               </div>
+
+
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
+               <button type="submit" class="btn btn-success"><i class="mdi mdi-content-save-all-outline"></i> Simpan
+                  Data</button>
+            </div>
+         </form>
+      </div>
+   </div>
+</div>
