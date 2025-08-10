@@ -81,12 +81,12 @@ module.exports = {
          });
 
          if (socketId) {
-            io.to(socketId).emit('data-siswa:toast', {
+            io.to(socketId).emit('push:toast', {
                message: `Data Siswa baru berhasil disimpan!`,
                type: 'success'
             });
 
-            socketBroadcastExcept(io, socketId).emit('data-siswa:toast', {
+            socketBroadcastExcept(io, socketId).emit('push:toast', {
                message: `Seseorang menambahkan satu data siswa baru!`,
                type: 'warning'
             });
@@ -177,12 +177,12 @@ module.exports = {
          });
 
          if (socketId) {
-            io.to(socketId).emit('data-siswa:toast', {
+            io.to(socketId).emit('push:toast', {
                message: `Data Siswa berhasil diperbarui!`,
                type: 'success'
             });
 
-            socketBroadcastExcept(io, socketId).emit('data-siswa:toast', {
+            socketBroadcastExcept(io, socketId).emit('push:toast', {
                message: `Seseorang merubah salah satu data siswa!`,
                type: 'warning'
             });
@@ -222,12 +222,12 @@ module.exports = {
          });
 
          if (socketId) {
-            io.to(socketId).emit('data-siswa:toast', {
+            io.to(socketId).emit('push:toast', {
                message: `Data siswa berhasil dihapus!`,
                type: 'success'
             });
 
-            socketBroadcastExcept(io, socketId).emit('data-siswa:toast', {
+            socketBroadcastExcept(io, socketId).emit('push:toast', {
                message: `Seseorang menghapus salah satu data siswa!`,
                type: 'warning'
             });

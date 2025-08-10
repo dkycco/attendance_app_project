@@ -59,7 +59,6 @@
    </div>
 </div>
 
-<script src="/socket.io/socket.io.js"></script>
 <script>
    const socket = io();
 
@@ -119,7 +118,7 @@
       });
    }
 
-   socket.on('log-absensi:toast', payload => {
+   socket.on('push:toast', payload => {
       const message = payload.message;
       const type = payload.type;
       showToastify(message, type);

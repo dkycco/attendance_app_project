@@ -29,12 +29,20 @@
                            <td><%= data.id %></td>
                            <td><%= data.nama_lengkap %></td>
                            <td><%= data.username %></td>
-                           <td><span class="badge bg-danger"><%= data.role %></span></td>
+                           <td>
+                              <% 
+                              const badgeColors = {
+                                 webmaster: 'bg-danger',
+                                 admin: 'bg-warning',
+                                 guru: 'bg-success'
+                              };
+                              const color = badgeColors[data.role];
+                              %>
+                              <%- color ? `<span class="badge ${color}">${data.role.charAt(0).toUpperCase() + data.role.slice(1)}</span>` : '' %>
+                           </td>
                            <td>Aksi</td>
                         </tr>
                      <% }); %>
-                     <tr>
-                     </tr>
                   </tbody>
                </table>
             </div>
@@ -42,3 +50,23 @@
       </div>
    </div>
 </div>
+
+<script>
+   const socket = io();
+
+   socket.on('push:toast', payload => {
+      const message = payload.message;
+      const type = payload.type;
+      showToastify(message, type);
+   });
+
+   document.addEventListener('DOMContentLoaded', () => {
+      const idTable = 'tableDataPengguna';
+      const btnAdd = document.getElementById('btnTambahPengguna');
+      const table = document.getElementById(idTable);
+      const tableDataPengguna = new DataTable('#' + idTable, {
+         scrollX: true,
+         order: [0, 'desc']
+      })
+   });
+</script>

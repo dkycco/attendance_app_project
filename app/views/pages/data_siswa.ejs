@@ -56,7 +56,6 @@
    </div>
 </div>
 
-<script src="/socket.io/socket.io.js"></script>
 <script>
    const socket = io();
 
@@ -117,7 +116,7 @@
       });
    }
 
-   socket.on('data-siswa:toast', payload => {
+   socket.on('push:toast', payload => {
       const message = payload.message;
       const type = payload.type;
       showToastify(message, type);

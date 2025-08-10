@@ -187,7 +187,7 @@ module.exports = {
                     await whatsappClient.sendMessage(phone, pesan)
                     await created.update({ status_pesan: 'terkirim' });
 
-                    io.emit('log-absensi:toast', {
+                    io.emit('push:toast', {
                         message: `Pesan terkirim ke ${no_hp}`,
                         type: 'success'
                     });
@@ -212,7 +212,7 @@ module.exports = {
                 status_pesan: 'pending'
             });
 
-            io.emit('log-absensi:toast', {
+            io.emit('push:toast', {
                 message: `Absensi berhasil disimpan dengan nama ${nama_lengkap}`,
                 type: 'success'
             });

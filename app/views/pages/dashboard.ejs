@@ -617,3 +617,14 @@
 
    </div>
 </div>
+
+<script>
+   const socket = io();
+
+   socket.on('push:toast', payload => {
+      const message = payload.message;
+      const type = payload.type;
+      showToastify(message, type);
+   });
+
+</script>
