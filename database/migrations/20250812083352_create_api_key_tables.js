@@ -22,6 +22,10 @@ module.exports = {
             allowNull: false,
             unique: true
          },
+         keterengan: {
+            type: Sequelize.STRING,
+            allowNull: false
+         },
          status: {
             type: Sequelize.ENUM('active', 'disable'),
             allowNull: false

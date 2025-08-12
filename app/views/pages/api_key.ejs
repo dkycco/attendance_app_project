@@ -5,7 +5,7 @@
 
          <div class="page-title-right">
             <ol class="breadcrumb m-0">
-               <li class="breadcrumb-item"><a href="javascript: void(0);">Apps</a></li>
+               <li class="breadcrumb-item active">Pengaturan</li>
                <li class="breadcrumb-item active">API Key</li>
             </ol>
          </div>
@@ -13,3 +13,125 @@
       </div>
    </div>
 </div>
+
+<div class="row">
+   <div class="col-md-6-lg-12">
+      <div class="card">
+         <div class="card-header">
+            <h5 class="card-title mb-0">Data Siswa</h5>
+         </div>
+         <div class="card-body">
+            <div class="row g-4 mb-3">
+               <div class="col-md-6">
+                  <div>
+                     <button type="button" class="btn btn-success" id="btnTambahAPIKey">
+                        <i class="ri-add-line align-bottom me-1"></i> Tambah API Key
+                     </button>
+                  </div>
+               </div>
+               <table id="tableAPIKey" class="table nowrap align-middle" style="width:100%">
+                  <thead>
+                     <tr>
+                        <th>ID</th>
+                        <th>API Key</th>
+                        <th>Dibuat Oleh</th>
+                        <th>Tanggal Dibuat</th>
+                        <th>Keterangan</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                     </tr>
+               </table>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+<script>
+   const socket = io();
+
+   function handleFormSubmit(url) {
+      const form = document.getElementById('formAPIKey');
+
+      form.addEventListener('submit', async function onSubmit(e) {
+         e.preventDefault();
+
+         const formData = new FormData(this);
+         const data = Object.fromEntries(formData.entries());
+
+         try {
+            const res = await fetch(url, {
+               method: 'POST',
+               headers: {
+                  'Content-Type': 'application/json',
+                  'x-socket-id': socket.id
+               },
+               body: JSON.stringify(data)
+            });
+
+            document.activeElement?.blur();
+
+            const result = await res.json();
+            if (!res.ok) {
+               showToastify(result.message, result.type);
+               return;
+            }
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalAPIKey'));
+            modal.hide();
+            form.reset();
+         } catch (err) {
+            console.error('Gagal menyimpan API key:', err);
+         }
+      });
+   }
+
+   document.addEventListener('DOMContentLoaded', () => {
+      const idTable = 'tableAPIKey';
+      const btnAdd = document.getElementById('btnTambahAPIKey');
+      const table = document.getElementById(idTable);
+      const tableAPIKey = new DataTable('#' + idTable, {
+         scrollX: true,
+         order: [0, 'desc'],
+         columnDefs: [{
+            orderable: false, targets: 5
+         }],
+      })
+
+      btnAdd.addEventListener('click', async () => {
+         const response = await fetch('/api-key/create');
+         const html = await response.text();
+         document.getElementById('modalContainer').innerHTML = html;
+
+         $('.select2').select2({
+            dropdownParent: $('#modalAPIKey')
+         });
+
+         const modal = new bootstrap.Modal(document.getElementById('modalAPIKey'));
+         modal.show();
+
+         handleFormSubmit('/api-key');
+      });
+
+      table.addEventListener('click', async (e) => {
+         const btn = e.target.closest('.btn-edit');
+         if (btn) {
+            const id = btn.getAttribute('data-id');
+            const response = await fetch('/api-key/edit/' + id);
+            const html = await response.text();
+            document.getElementById('modalContainer').innerHTML = html;
+
+            $('.select2').select2({
+               dropdownParent: $('#modalAPIKey')
+            });
+
+            const modal = new bootstrap.Modal(document.getElementById('modalAPIKey'));
+            modal.show();
+
+            handleFormSubmit('/apip-key/update/' + id);
+         }
+      });
+
+   });
+   
+</script>

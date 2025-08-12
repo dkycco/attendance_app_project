@@ -1,0 +1,29 @@
+<div class="modal zoomIn" id="modalAPIKey" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+   role="dialog" aria-labelledby="tambahSiswaLabel">
+   <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="">Form <%= is_create ? 'Tambah' : 'Edit' %> API Key</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            </button>
+         </div>
+         <form action="" id="formAPIKey" method="POST" class="needs-validation" novalidate>
+            <div class="modal-body">
+
+               <input type="number" name="id_user" value="1" hidden>
+
+               <div class="mb-3">
+                  <label class="form-label" for="Keterangan">Keterangan</label>
+                  <textarea class="form-control" name="keterangan" id="keterangan"></textarea>
+               </div>
+
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
+               <button type="submit" class="btn btn-success"><i class="mdi mdi-content-save-all-outline"></i> Simpan
+                  Data</button>
+            </div>
+         </form>
+      </div>
+   </div>
+</div>

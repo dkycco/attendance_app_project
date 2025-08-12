@@ -9,7 +9,7 @@ const LoginController = require('../app/controllers/LoginController');
 const whatsappController = require('../app/controllers/whatsappController');
 const APIKeyController = require('../app/controllers/APIKeyController');
 
-const { ensureAuthenticated, authorizeRoles } = require('../middleware/authMiddleware');
+// const { ensureAuthenticated, authorizeRoles } = require('../middleware/authMiddleware');
 
 router.get('/login', LoginController.index);
 router.post('/login', LoginController.login);
@@ -41,5 +41,7 @@ router.get('/log-absensi/lihat-data/:id', LogAbsensiController.viewData);
 router.get('/whatsapp', whatsappController.index);
 
 router.get('/api-key', APIKeyController.index);
+router.get('/api-key/create', APIKeyController.create);
+router.post('/api-key', APIKeyController.store);
 
 module.exports = router;

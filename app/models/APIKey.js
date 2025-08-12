@@ -1,11 +1,11 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');
 const BaseModel = require('./BaseModel');
-const User = require('./User');
+const UserModel = require('./user')
 
-class User extends BaseModel {}
+class APIKey extends BaseModel {}
 
-User.init({
+APIKey.init({
    id: {
       type: DataTypes.INTEGER(10),
       primaryKey: true,
@@ -20,19 +20,19 @@ User.init({
       allowNull: false,
       unique: true
    },
+   keterangan: DataTypes.STRING(255),
    status: DataTypes.ENUM('active', 'disable'),
-   password: DataTypes.STRING(255),
    created_at: DataTypes.TIME
 }, {
    sequelize,
    tableName: 'users'
 });
 
-LogAbsensi.belongsTo(User, {
-  foreignKey: 'id',
+APIKey.belongsTo(UserModel, {
+  foreignKey: 'dibuat_oleh',
   targetKey: 'id',
-  as: 'user'
+  as: 'users'
 });
 
 
-module.exports = User;
+module.exports = APIKey;

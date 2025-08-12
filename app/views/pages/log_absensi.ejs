@@ -143,7 +143,10 @@
       const table = document.getElementById(idTable);
       const tableDataSiswa = new DataTable('#' + idTable, {
          scrollX: true,
-         order: [0, 'desc']
+         order: [0, 'desc'],
+         columnDefs: [{
+            orderable: false, targets: 7
+         }],
       })
 
       btnAdd.addEventListener('click', async () => {
