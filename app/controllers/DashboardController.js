@@ -10,7 +10,7 @@ module.exports = {
          res.render('pages/dashboard', {
             layout: 'layouts/main-layout',
             title: 'Dashboard | SMK KORPRI SUMEDANG',
-            currentController: 'dashboard.index',
+            controller: 'dashboard.index',
          });
       } catch (err) {
          res.status(500).send('Terjadi kesalahan saat memuat halaman.');

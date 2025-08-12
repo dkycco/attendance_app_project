@@ -2,13 +2,22 @@ const DataSiswa = require('../models/DataSiswa');
 const LogAbsensi = require('../models/LogAbsensi');
 const { Op } = require('sequelize');
 const dayjs = require('dayjs');
-const whatsappClient = require('../../services/whatsapp');
+const { client: whatsappClient } = require('../../services/whatsapp');
+
+const now = dayjs();
+const todayStart = now.startOf('day').toDate();
+const todayEnd = now.endOf('day').toDate();
 
 module.exports = {
     index: async(req, res) => {
         try {
             const dataSiswa = await DataSiswa.findAll();
             const dataLogAbsensi = await LogAbsensi.findAll({
+                where: {
+                    created_at: {
+                        [Op.between]: [todayStart, todayEnd]
+                    }
+                },
                 include: {
                     model: DataSiswa,
                     as: 'siswa'
@@ -21,7 +30,7 @@ module.exports = {
             res.render('pages/log_absensi', {
                 layout: 'layouts/main-layout',
                 title: 'Log Absensi | SMK KORPRI SUMEDANG',
-                currentController: 'log_absensi.index',
+                controller: 'log_absensi.index',
                 dataLogAbsensi,
                 dataSiswa
             });
@@ -104,10 +113,6 @@ module.exports = {
                 });
             }
 
-            const now = dayjs();
-            const todayStart = now.startOf('day').toDate();
-            const todayEnd = now.endOf('day').toDate();
-
             const existing = await LogAbsensi.findOne({
                 where: {
                     nisn,
@@ -183,7 +188,7 @@ module.exports = {
 
             if (no_hp) {
                 try {
-                    await delay(5000);
+                    await delay(3000);
                     await whatsappClient.sendMessage(phone, pesan)
                     await created.update({ status_pesan: 'terkirim' });
 

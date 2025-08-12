@@ -31,7 +31,7 @@
                 <li class="menu-title"><span data-key="t-data">Menu</span></li>
 
                 <li class="nav-item">
-                    <a class="nav-link menu-link <%= currentController === 'dashboard.index' ? 'active' : '' %>" href="/dashboard">
+                    <a class="nav-link menu-link <%= controller === 'dashboard.index' ? 'active' : '' %>" href="/dashboard">
                         <i class="bx bxs-dashboard"></i> <span data-key="t-data-siswa">Dashboard</span>
                     </a>
                 </li>
@@ -39,13 +39,13 @@
                 <li class="menu-title"><span data-key="t-data">Data</span></li>
 
                 <li class="nav-item">
-                    <a class="nav-link menu-link <%= currentController === 'users.index' ? 'active' : '' %>" href="/pengguna">
+                    <a class="nav-link menu-link <%= controller === 'users.index' ? 'active' : '' %>" href="/pengguna">
                         <i class="mdi mdi-account-key"></i> <span data-key="t-data-siswa">Pengguna</span>
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link menu-link <%= currentController === 'data_siswa.index' ? 'active' : '' %>" href="/data-siswa">
+                    <a class="nav-link menu-link <%= controller === 'data_siswa.index' ? 'active' : '' %>" href="/data-siswa">
                         <i class="mdi mdi-account-group-outline"></i> <span data-key="t-data-siswa">Data Siswa</span>
                     </a>
                 </li>
@@ -53,8 +53,22 @@
                 <li class="menu-title"><span data-key="t-absensi">Absensi</span></li>
 
                 <li class="nav-item">
-                    <a class="nav-link menu-link <%= currentController === 'log_absensi.index' ? 'active' : '' %>" href="/log-absensi">
+                    <a class="nav-link menu-link <%= controller === 'log_absensi.index' ? 'active' : '' %>" href="/log-absensi">
                         <i class="mdi mdi-book-clock-outline"></i> <span data-key="t-log-absensi">Log Absensi</span>
+                    </a>
+                </li>
+                
+                <li class="menu-title"><span data-key="t-absensi">Pengaturan</span></li>
+
+                <li class="nav-item">
+                    <a class="nav-link menu-link <%= controller === 'whatsapp.index' ? 'active' : '' %>" href="/whatsapp">
+                        <i class="mdi mdi-whatsapp"></i> <span data-key="t-whatsapp">Whatsapp</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link menu-link <%= controller === 'api_key.index' ? 'active' : '' %>" href="/api-key">
+                        <i class="mdi mdi-key-chain"></i> <span data-key="t-key-api">API Key</span>
                     </a>
                 </li>
 

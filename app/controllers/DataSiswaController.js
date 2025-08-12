@@ -23,7 +23,7 @@ module.exports = {
          res.render('pages/data_siswa', {
             layout: 'layouts/main-layout',
             title: 'Data Siswa | SMK KORPRI SUMEDANG',
-            currentController: 'data_siswa.index',
+            controller: 'data_siswa.index',
             dataSiswa
          });
       } catch (err) {

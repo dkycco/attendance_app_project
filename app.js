@@ -4,6 +4,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const expressLayouts = require('express-ejs-layouts');
 const session = require('express-session');
+const whatsappService = require('./services/whatsapp');
 
 const webRoutes = require('./routes/web');
 
@@ -28,6 +29,7 @@ app.set('views', path.join(__dirname, 'app/views'));
 app.use(expressLayouts);
 
 app.set('io', io);
+whatsappService.setIO(io);
 
 app.use((req, res, next) => {
     res.locals.user = req.session.user || null;

@@ -10,7 +10,7 @@ module.exports = {
          res.render('pages/users', {
             layout: 'layouts/main-layout',
             title: 'Pengguna | SMK KORPRI SUMEDANG',
-            currentController: 'users.index',
+            controller: 'users.index',
             dataUser
          });
       } catch (err) {

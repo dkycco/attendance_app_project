@@ -1,0 +1,110 @@
+<style>
+   #imgContainer * {
+      max-height: 250px;
+      max-width: 250px;
+   }
+
+   #imgContainer lord-icon {
+      height: 100%;
+      width: 100%;
+   }
+
+  #dotStatus {
+    animation: blink-animation 1s infinite;
+  }
+
+  @keyframes blink-animation {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+</style>
+
+<div class="row">
+   <div class="col-md-6 mx-auto">
+      <div class="card">
+         <div class="card-body">
+            <div class="text-center">
+               <h4 class="mb-4">Whatsapp service</h4>
+   
+               <h6 class="text-muted mb-2">Status</h6>
+               <div class="text-muted mb-4">
+                  <p class="d-inline" id="textStatus">Menunggu</p>
+                  <span class="d-inline text-warning" id="dotStatus">⦿</span>
+               </div>
+               <div id="imgContainer">
+                  <lord-icon
+                     src="https://cdn.lordicon.com/avwubsdy.json"
+                     trigger="loop">
+                  </lord-icon>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+<script>
+   const socket = io();
+   const textStatus = document.getElementById('textStatus');
+   const dotStatus = document.getElementById('dotStatus');
+   const imgContainer = document.getElementById('imgContainer');
+
+   function updateStatus(message, type) {
+      textStatus.textContent = message;
+      dotStatus.className = `text-${type}`;
+   }
+
+   socket.on('status', status => {
+   if (status.type === 'qr') {
+      updateStatus('Scan QR Code di WhatsApp', 'warning');
+      QRCode.toDataURL(status.data, (error, url) => {
+         if (!error) imgContainer.innerHTML = `<img src="${url}" alt="QR Code" />`;
+      });
+   } else if (status.type === 'ready') {
+      updateStatus('WhatsApp siap digunakan!', 'success');
+      imgContainer.innerHTML = `<lord-icon src="https://cdn.lordicon.com/aksvbzmu.json" trigger="loop"></lord-icon>`;
+   } else if (status.type === 'disconnected') {
+      updateStatus(`Terputus: ${status.data.trim()}`, 'danger');
+      imgContainer.innerHTML = `<lord-icon src="https://cdn.lordicon.com/gdfrsvpt.json" trigger="loop"></lord-icon>`;
+   }
+   });
+
+   // document.addEventListener('DOMContentLoaded', () => {
+
+   //    const qr = socket.on('qr', qr => {
+   //       updateStatus('Scan QR Code di WhatsApp', 'warning');
+   //       QRCode.toDataURL(qr, (error, url) => {
+   //          if (error) {
+   //             console.error(error);
+   //             return;
+   //          }
+   //          imgContainer.innerHTML = `<img src="${url}" alt="QR Code" />`;
+   //       });    
+   //    });
+   
+   //    const ready = socket.on('ready', () => {
+   //       updateStatus('WhatsApp siap digunakan!', 'success');
+   //       imgContainer.innerHTML = `
+   //          <lord-icon
+   //             src="https://cdn.lordicon.com/aksvbzmu.json"
+   //             trigger="loop"
+   //          </lord-icon>
+   //       `;
+   //    });
+   
+   //    const disconnected = socket.on('disconnected', reason => {
+   //       updateStatus(`Terputus: ${reason.trim()}`, 'danger');
+   //       imgContainer.innerHTML = `
+   //          <lord-icon
+   //             src="https://cdn.lordicon.com/gdfrsvpt.json"
+   //             trigger="loop"
+   //          </lord-icon>
+   //       `;
+   //    });
+
+   // });
+
+</script>

@@ -9,7 +9,7 @@ module.exports = {
       res.render('auth/login', {
          layout: 'layouts/auth-layout',
          title: 'Data Siswa | SMK KORPRI SUMEDANG',
-         currentController: 'login.index',
+         controller: 'login.index',
       });
    },
 

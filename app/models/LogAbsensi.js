@@ -15,8 +15,7 @@ LogAbsensi.init({
   },
   nisn: {
     type: DataTypes.STRING,
-    allowNull: false,
-    unique: true
+    allowNull: false
   },
   status_siswa: DataTypes.ENUM('hadir', 'pulang'),
   status_pesan: DataTypes.ENUM('pending', 'terkirim', 'gagal'),
