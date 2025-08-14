@@ -13,7 +13,7 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 app.use(session({
-    secret: 'rahasia_anda',
+    secret: 'abc',
     resave: false,
     saveUninitialized: false
 }));
@@ -46,7 +46,6 @@ app.use('/', (req, res) => {
     })
 })
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
+server.listen(() => {
+    console.log(`Server running`);
 });

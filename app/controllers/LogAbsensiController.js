@@ -8,6 +8,9 @@ const now = dayjs();
 const todayStart = now.startOf('day').toDate();
 const todayEnd = now.endOf('day').toDate();
 
+const jamMasuk = new Date();
+jamMasuk.setHours(6, 30, 0, 0);
+
 module.exports = {
     index: async(req, res) => {
         try {
@@ -27,12 +30,18 @@ module.exports = {
                 ]
             });
 
+            const createdAt = new Date(dataLogAbsensi.created_at);
+
+            const diffMinutes = (createdAt - jamMasuk) / (1000 * 60);
+            const onTime = diffMinutes > 0 && diffMinutes <= 10;
+
             res.render('pages/log_absensi', {
                 layout: 'layouts/main-layout',
                 title: 'Log Absensi | SMK KORPRI SUMEDANG',
                 controller: 'log_absensi.index',
                 dataLogAbsensi,
-                dataSiswa
+                dataSiswa,
+                onTime
             });
         } catch (error) {
             res.status(500).send('Terjadi kesalahan saat memuat halaman.');
@@ -126,12 +135,12 @@ module.exports = {
                 ]
             });
 
-            if (existing) {
-                return res.status(409).json({
-                    message: 'Siswa sudah absen hari ini!',
-                    type: 'warning'
-                });
-            }
+            // if (existing) {
+            //     return res.status(409).json({
+            //         message: 'Siswa sudah absen hari ini!',
+            //         type: 'warning'
+            //     });
+            // }
 
             const waktu = new Date().toLocaleTimeString('id-ID', {
                 hour: '2-digit',

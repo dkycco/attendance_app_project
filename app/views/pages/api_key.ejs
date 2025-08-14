@@ -40,6 +40,46 @@
                         <th>Status</th>
                         <th>Aksi</th>
                      </tr>
+                  </thead>
+                  <tbody>
+                     <% dataAPIKey.forEach(data => { %>
+                     <tr>
+                        <td><%= data.id %></td>
+                        <td><%= data.api_key %></td>
+                        <td><%= data.users?.nama_lengkap %></td>
+                        <td>
+                           <%= new Date(data.created_at).toLocaleDateString('id-ID', {
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric'
+                           }) %>
+                        </td>
+                        <td><%= truncateText(data.keterangan, 30) %></td>
+                        <td>
+                           <% 
+                           const badgeColors = {
+                              active: 'bg-success',
+                              disable: 'bg-danger'
+                           };
+                           const color = badgeColors[data.status];
+                           %>
+                           <%- color ? `<span class="badge ${color}">${data.status.charAt(0).toUpperCase() + data.status.slice(1)}</span>` : '' %>
+                        </td>
+                        <td>
+                           <button type="button"
+                              class="btn btn-sm btn-warning btn-icon waves-effect waves-light btn-edit"
+                              data-id="<%= data.id %>">
+                              <i class="ri-pencil-fill"></i>
+                           </button>
+                           <button type="button"
+                              class="btn btn-sm btn-danger btn-icon waves-effect waves-light btn-remove"
+                              data-id="<%= data.id %>">
+                              <i class="ri-delete-bin-5-line"></i>
+                           </button>
+                        </td>
+                     </tr>
+                     <% }); %>
+                  </tbody>
                </table>
             </div>
          </div>
@@ -49,6 +89,45 @@
 
 <script>
    const socket = io();
+
+   function truncateText(text, maxLength) {
+      if (text.length > maxLength) {
+         return text.substring(0, maxLength) + '...';
+      }
+      return text;
+   } 
+
+   function APIKeyRow(data) {
+      const row = document.createElement('tr');
+      const tanggal = new Date(data.created_at).toLocaleDateString('id-ID', {
+         day: 'numeric',
+         month: 'long',
+         year: 'numeric'
+      });
+      const badgeColors = {
+         active: 'bg-success',
+         disable: 'bg-danger'
+      };
+      const color = badgeColors[data.status];
+
+      row.innerHTML = `
+         <td>${data.id}</td>
+         <td>${data.api_key}</td>
+         <td>${data.users?.nama_lengkap}</td>
+         <td>${tanggal}</td>
+         <td>${truncateText(data.keterangan, 30)}</td>
+         <td>${color ? `<span class="badge ${color}">${data.status.charAt(0).toUpperCase() + data.status.slice(1)}</span>` : ''}</td>
+         <td>
+            <button type="button" class="btn btn-sm btn-warning btn-icon waves-effect waves-light btn-edit" data-id="${data.id}">
+               <i class="ri-pencil-fill"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-danger btn-icon waves-effect waves-light btn-remove" data-id="${data.id}">
+               <i class="ri-delete-bin-5-line"></i>
+            </button>
+         </td>
+      `;
+      return row;
+   }
 
    function handleFormSubmit(url) {
       const form = document.getElementById('formAPIKey');
@@ -86,6 +165,54 @@
       });
    }
 
+   socket.on('push:toast', payload => {
+      const message = payload.message;
+      const type = payload.type;
+      showToastify(message, type);
+   });
+
+   socket.on('api-key:baru', (dataList) => {
+      const list = Array.isArray(dataList) ? dataList : [dataList];
+      const tbody = document.querySelector('#tableAPIKey tbody');
+      const fragment = document.createDocumentFragment();
+
+      for (const data of list) {
+         const existing = tbody.querySelector(`.btn-remove[data-id="${data.id}"]`);
+         if (existing) continue;
+
+         const row = APIKeyRow(data);
+         fragment.appendChild(row);
+      }
+
+      tbody.prepend(fragment);
+   });
+
+   socket.on('api-key:ubah', function (data) {
+      const row = document.querySelector(`#tableAPIKey tbody tr td button[data-id="${data.id}"]`)?.closest('tr');
+      if (!row) return;
+
+      const badgeColors = {
+         active: 'bg-success',
+         disable: 'bg-danger'
+      };
+      const color = badgeColors[data.status];
+      
+      row.cells[4].textContent = truncateText(data.keterangan, 30);
+      row.cells[5].innerHTML = color
+      ? `<span class="badge ${color}">${data.status.charAt(0).toUpperCase() + data.status.slice(1)}</span>`
+      : '';
+
+   });
+
+   socket.on('api-key:broadcast-hapus', async function (data) {
+      const button = document.querySelector(`.btn-remove[data-id="${data.id}"]`);
+
+      if (button) {
+         const row = button.closest('tr');
+         if (row) row.remove();
+      }
+   });
+
    document.addEventListener('DOMContentLoaded', () => {
       const idTable = 'tableAPIKey';
       const btnAdd = document.getElementById('btnTambahAPIKey');
@@ -94,7 +221,8 @@
          scrollX: true,
          order: [0, 'desc'],
          columnDefs: [{
-            orderable: false, targets: 5
+            orderable: false,
+            targets: 6
          }],
       })
 
@@ -128,10 +256,35 @@
             const modal = new bootstrap.Modal(document.getElementById('modalAPIKey'));
             modal.show();
 
-            handleFormSubmit('/apip-key/update/' + id);
+            handleFormSubmit('/api-key/update/' + id);
+         }
+      });
+
+      table.addEventListener('click', async (e) => {
+         if (e.target.closest('.btn-remove')) {
+            const btn = e.target.closest('.btn-remove');
+            const id = btn.getAttribute('data-id');
+
+            const confirmAlert = confirm('Yakin hapus data ini?');
+            if (!confirmAlert) return;
+
+            try {
+               const res = await fetch(`/api-key/${id}`, {
+                  method: 'DELETE',
+                  headers: {
+                     'Content-Type': 'application/json',
+                     'x-socket-id': socket.id
+                  }
+               });
+
+               if (res.ok) {
+                  btn.closest('tr').remove();
+               }
+            } catch (error) {
+               console.log(error);
+            }
          }
       });
 
    });
-   
 </script>

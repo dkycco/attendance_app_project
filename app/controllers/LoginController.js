@@ -8,7 +8,7 @@ module.exports = {
    index: async (req, res) => {
       res.render('auth/login', {
          layout: 'layouts/auth-layout',
-         title: 'Data Siswa | SMK KORPRI SUMEDANG',
+         title: 'Login | SMK KORPRI SUMEDANG',
          controller: 'login.index',
       });
    },

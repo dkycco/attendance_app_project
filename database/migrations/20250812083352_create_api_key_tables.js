@@ -18,11 +18,11 @@ module.exports = {
             }
          },
          api_key: {
-            type: Sequelize.STRING(100),
+            type: Sequelize.STRING(15),
             allowNull: false,
             unique: true
          },
-         keterengan: {
+         keterangan: {
             type: Sequelize.STRING,
             allowNull: false
          },

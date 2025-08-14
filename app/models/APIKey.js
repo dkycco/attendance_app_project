@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');
 const BaseModel = require('./BaseModel');
-const UserModel = require('./user')
+const UserModel = require('./User')
 
 class APIKey extends BaseModel {}
 
@@ -16,7 +16,7 @@ APIKey.init({
       allowNull: false,
    },
    api_key: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING(15),
       allowNull: false,
       unique: true
    },
@@ -25,7 +25,7 @@ APIKey.init({
    created_at: DataTypes.TIME
 }, {
    sequelize,
-   tableName: 'users'
+   tableName: 'api_key'
 });
 
 APIKey.belongsTo(UserModel, {

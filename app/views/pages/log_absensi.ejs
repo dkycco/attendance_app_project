@@ -40,8 +40,27 @@
                                  hour12: true
                               }) %>
                         </td>
-                        <td><%= data.status_siswa %></td>
-                        <td><%= data.status_pesan %></td>
+                        <td>
+                           <% 
+                           const badgeColors = {
+                              hadir: 'bg-success',
+                              pulang: 'bg-warning'
+                           };
+                           const color = badgeColors[data.status_siswa];
+                           %>
+                           <%- color ? `<span class="badge ${color}">${data.status_siswa.charAt(0).toUpperCase() + data.status_siswa.slice(1)}</span>` : '' %>
+                        </td>
+                        <td>
+                           <% 
+                           const badgeColors2 = {
+                              pending: 'bg-warning',
+                              terkirim: 'bg-success',
+                              gagal: 'bg-danger'
+                           };
+                           const color2 = badgeColors2[data.status_pesan];
+                           %>
+                           <%- color2 ? `<span class="badge ${color2}">${data.status_pesan.charAt(0).toUpperCase() + data.status_pesan.slice(1)}</span>` : '' %>
+                        </td>
                         <td>
                            <button type="button"
                               class="btn btn-sm btn-primary btn-icon waves-effect waves-light btn-view"
@@ -59,19 +78,38 @@
    </div>
 </div>
 
+</div>
+
 <script>
    const socket = io();
 
    function dataLogAbsensi(data) {
       const row = document.createElement('tr');
+      const badgeColors = {
+         hadir: 'bg-success',
+         pulang: 'bg-warning'
+      };
+      const color = badgeColors[data.status_siswa];
+
+      const badgeColors2 = {
+         terkirim: 'bg-success',
+         pending: 'bg-warning',
+         gagal: 'bg-danger'
+      };
+      const color2 = badgeColors2[data.status_pesan];
+
       row.innerHTML = `
          <td>${data.id}</td>
          <td>${data.id_sidik_jari}</td>
          <td>${data.nama_lengkap}</td>
          <td>${data.kelas}</td>
          <td>${data.waktu}</td>
-         <td>${data.status_siswa}</td>
-         <td>${data.status_pesan}</td>
+         <td>
+            ${color ? `<span class="badge ${color}">${data.status_siswa.charAt(0).toUpperCase() + data.status_siswa.slice(1)}</span>` : ''}
+         </td>
+         <td>
+            ${color2 ? `<span class="badge ${color2}">${data.status_pesan.charAt(0).toUpperCase() + data.status_pesan.slice(1)}</span>` : ''}
+         </td>
          <td>
             <button type="button"
                class="btn btn-sm btn-primary btn-icon waves-effect waves-light btn-view"
@@ -88,6 +126,21 @@
 
       form.addEventListener('submit', async function onSubmit(e) {
          e.preventDefault();
+
+         const submitBtn = form.querySelector('[type="submit"]');
+         const originalBtnHTML = submitBtn.innerHTML
+
+         submitBtn.disabled = true;
+         submitBtn.innerHTML = `
+            <span class="d-flex align-items-center">
+                <span class="spinner-border spinner-border-sm flex-shrink-0" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </span>
+                <span class="flex-grow-1 ms-2">
+                    Loading...
+                </span>
+            </span>
+        `;
 
          const formData = new FormData(this);
          const data = Object.fromEntries(formData.entries());
@@ -114,7 +167,10 @@
             form.reset();
          } catch (err) {
             console.error('Gagal menyimpan absensi:', err);
-         }
+         } finally {
+            submitBtn.innerHTML = originalBtnHTML;
+            submitBtn.disabled = false;
+        }
       });
    }
 

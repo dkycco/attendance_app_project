@@ -2,6 +2,7 @@ const User = require("../models/user");
 const {validationResult} = require('express-validator');
 const dataUserValidator = require('../../validators/dataUserValidator');
 const dataUserWoPassValidator = require('../../validators/dataUserWoPassValidator');
+const bcrypt = require('bcryptjs');
 
 module.exports = {
    index: async (req, res) => {
@@ -55,12 +56,15 @@ module.exports = {
             type: 'warning'
          });
       }
+      
 
       try {
+         const hashPassword = await bcrypt.hash(password, 10);
+
          const created = await User.create({
             nama_lengkap,
             username,
-            password,
+            password: hashPassword,
             role
          });
 
@@ -141,10 +145,12 @@ module.exports = {
          }
 
          if (password) {
+            const hashPassword = await bcrypt.hash(password, 10);
+
             await user.update({
                nama_lengkap,
                username,
-               password,
+               password: hashPassword,
                role
             });
          } else {
